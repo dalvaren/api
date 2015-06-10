@@ -1,0 +1,669 @@
+FORMAT: 1A
+HOST: http://api.evino.com.br/v1/
+
+# Evino
+
+
+# Evino API [/]
+
+This resource does not have any attributes. Instead it offers the initial
+API affordances in the form of the links in the JSON body.
+
+It is recommend to follow the “url” link values,
+[Link](https://tools.ietf.org/html/rfc5988) or Location headers where
+applicable to retrieve resources. Instead of constructing your own URLs,
+to keep your client decoupled from implementation details.
+
+## Retrieve the Entry Point [GET]
+
++ Response 200 (application/json)
+    + Attributes
+        + register: /auth/register (string)
+
+## Group Error handling [/error]
+
+All responses with HTTP out of 200 range WILL response and JSON object with an human friendly message and a compreensive http status code
+
+### Error example [GET]
+
++ Response 418 (application/json)
+    + Attributes
+        + message: I'm a error message for human beings (string) - Friendly error message
+
+# Group Authentication
+
+The authentication schema for Evino API is based on OAuth2. Each endpoint that needed or can show personnalized data for each user MUST be requested passing the access token in "Authorization" http header and MUST to use an HTTPS connection.
+
+Example: 
+
+`Authorization: Bearer CAACEdEose0cBAAavhW6UJnS1AlVgZAqFZB1d5JeBqYvAiDAP7BugMuElSo6sYBxFhrfRFaJmOPKUTjQis8Uezsil7yCRUxKWZBMwkcZB0QbhVr106bkJmEHx8AhTa0o4FM5SVyCgVJO7rCvVnVwqKl3RmviBj4MFO9n7O5y4LckZATrW9o3MCc7U1uFbzZB2LYc2AZCgYLmcpdSz5tlkiTZBZB9cZAmFsxd8GZD`
+
+## Register [/auth/register]
+
+Used for create a new user and returns an access token in success case. 
+
+
+### Register of user [POST /auth/register]
+
++ Request Hard sign-up with e-mail and password (application/json)
+    + Attributes 
+        + email: user@evino.com.br (string) - E-mail from the user
+        + password: S3cr3t (string) - Password from the user MUST be omitted for soft create soft login user
+            
++ Request Hard sign-up with access token and password (application/json)
+    + Attributes 
+        + password: S3cr3t (string) - Password from the user MUST be omitted for soft create soft login user
+
+    + Headers
+    
+            Authorization: Bearer CAACEdEose0cBAAavhW6UJnS1AlVgZAqFZB1d5JeBqYvAiDAP7BugMuElSo6sYBxFhrfRFaJmOPKUTjQis8Uezsil7yCRUxKWZBMwkcZB0QbhVr106bkJmEHx8AhTa0o4FM5SVyCgVJO7rCvVnVwqKl3RmviBj4MFO9n7O5y4LckZATrW9o3MCc7U1uFbzZB2LYc2AZCgYLmcpdSz5tlkiTZBZB9cZAmFsxd8GZD
+            
++ Request Soft sign-up sending e-mail for create a soft user (application/json)
+    + Attributes 
+        + email: user@evino.com.br (string) - E-mail from the user
+
++ Response 200 (application/json)
+    + Attributes
+        + token: CAACEdEose0cBAAavhW6UJnS1AlVgZAqFZB1d5JeBqYvAiDAP7BugMuElSo6sYBxFhrfRFaJmOPKUTjQis8Uezsil7yCRUxKWZBMwkcZB0QbhVr106bkJmEHx8AhTa0o4FM5SVyCgVJO7rCvVnVwqKl3RmviBj4MFO9n7O5y4LckZATrW9o3MCc7U1uFbzZB2LYc2AZCgYLmcpdSz5tlkiTZBZB9cZAmFsxd8QZD (string) - Access token for request to Evino API
+
++ Request E-mail already taken sign-up (application/json)
+    + Attributes 
+        + email: existent.user@evino.com.br (string) - E-mail from the user
+        
++ Request Sign-up for existent user (application/json)
+    + Attributes 
+        + email: existent.user@evino.com.br (string) - E-mail from the user
+        + password: S3cr3t (string) - Password from the user MUST be omitted for soft create soft login user
+
++ Response 409 (application/json)
+    + Attributes 
+        + message: E-mail already taken (string) - Friendly error message
+
++ Request Login case with e-mail and token from different users (application/json)
+    + Attributes 
+        + email: user.different.from.token@evino.com.br (string) - E-mail from the user
+        + password: S3cr3t (string) - Password from the user MUST be omitted for soft create soft login user
+
+    + Headers
+    
+            Authorization: Bearer CAACEdEose0cBAAavhW6UJnS1AlVgZAqFZB1d5JeBqYvAiDAP7BugMuElSo6sYBxFhrfRFaJmOPKUTjQis8Uezsil7yCRUxKWZBMwkcZB0QbhVr106bkJmEHx8AhTa0o4FM5SVyCgVJO7rCvVnVwqKl3RmviBj4MFO9n7O5y4LckZATrW9o3MCc7U1uFbzZB2LYc2AZCgYLmcpdSz5tlkiTZBZB9cZAmFsxd8GZD
+
++ Response 409 (application/json)
+    + Attributes 
+        + message: E-mail and access token are related to different users (string) - Friendly error message
+            
++ Request Login case without any e-mail or token (application/json)
+    + Attributes 
+        + password: S3cr3t (string) - Password from the user MUST be omitted for soft create soft login user
+
++ Response 403 (application/json)
+    + Attributes 
+        + message: No user to perform this action (string) - Friendly error message
+
+### Login [POST /auth/login]
+
++ Request Hard login with e-mail and password (application/json)
+    + Attributes 
+        + email: user@evino.com.br (string) - E-mail from the user
+        + password: S3cr3t (string) - Password from the user MUST be omitted for soft create soft login user
+            
++ Request Hard login with access token and password (application/json)
+    + Attributes 
+        + password: S3cr3t (string) - Password from the user MUST be omitted for soft create soft login user
+
+    + Headers
+    
+            Authorization: Bearer CAACEdEose0cBAAavhW6UJnS1AlVgZAqFZB1d5JeBqYvAiDAP7BugMuElSo6sYBxFhrfRFaJmOPKUTjQis8Uezsil7yCRUxKWZBMwkcZB0QbhVr106bkJmEHx8AhTa0o4FM5SVyCgVJO7rCvVnVwqKl3RmviBj4MFO9n7O5y4LckZATrW9o3MCc7U1uFbzZB2LYc2AZCgYLmcpdSz5tlkiTZBZB9cZAmFsxd8GZD
+            
++ Request Soft login sending e-mail for create a soft user (application/json)
+    + Attributes 
+        + email: user@evino.com.br (string) - E-mail from the user
+
++ Response 200 (application/json)
+    + Attributes
+        + token: CAACEdEose0cBAAavhW6UJnS1AlVgZAqFZB1d5JeBqYvAiDAP7BugMuElSo6sYBxFhrfRFaJmOPKUTjQis8Uezsil7yCRUxKWZBMwkcZB0QbhVr106bkJmEHx8AhTa0o4FM5SVyCgVJO7rCvVnVwqKl3RmviBj4MFO9n7O5y4LckZATrW9o3MCc7U1uFbzZB2LYc2AZCgYLmcpdSz5tlkiTZBZB9cZAmFsxd8QZD (string) - Access token for request to Evino API
+
++ Request E-mail don't exists at database (application/json)
+    + Attributes 
+        + email: not.existent.user@evino.com.br (string) - E-mail from the user
+            
++ Response 201 (application/json)
+    + Attributes
+        + token: CAACEdEose0cBAAavhW6UJnS1AlVgZAqFZB1d5JeBqYvAiDAP7BugMuElSo6sYBxFhrfRFaJmOPKUTjQis8Uezsil7yCRUxKWZBMwkcZB0QbhVr106bkJmEHx8AhTa0o4FM5SVyCgVJO7rCvVnVwqKl3RmviBj4MFO9n7O5y4LckZATrW9o3MCc7U1uFbzZB2LYc2AZCgYLmcpdSz5tlkiTZBZB9cZAmFsxd8QZD (string) - Access token for request to Evino API
+
++ Request Login with wrong password (application/json)
+    + Attributes 
+        + email: user@evino.com.br (string) - E-mail from the user
+        + password: Wr0ngP455w0rd (string) - Password from the user MUST be omitted for soft create soft login user
+
++ Response 409 (application/json)
+    + Attributes 
+        + message: Wrong e-mail and/or password (string) - Friendly error message
+
++ Request Login case with e-mail and token from different users (application/json)
+    + Attributes 
+        + email: user.different.from.token@evino.com.br (string) - E-mail from the user
+        + password: S3cr3t (string) - Password from the user MUST be omitted for soft create soft login user
+
+    + Headers
+    
+            Authorization: Bearer CAACEdEose0cBAAavhW6UJnS1AlVgZAqFZB1d5JeBqYvAiDAP7BugMuElSo6sYBxFhrfRFaJmOPKUTjQis8Uezsil7yCRUxKWZBMwkcZB0QbhVr106bkJmEHx8AhTa0o4FM5SVyCgVJO7rCvVnVwqKl3RmviBj4MFO9n7O5y4LckZATrW9o3MCc7U1uFbzZB2LYc2AZCgYLmcpdSz5tlkiTZBZB9cZAmFsxd8GZD
+
++ Response 409 (application/json)
+    + Attributes 
+        + message: E-mail and access token are related to different users (string) - Friendly error message
+            
++ Request Login case without any e-mail or token (application/json)
+    + Attributes 
+        + password: S3cr3t (string) - Password from the user MUST be omitted for soft create soft login user
+
++ Response 403 (application/json)
+    + Attributes 
+        + message: No user to perform this action (string) - Friendly error message
+
+### Logout [GET /auth/logout]
+
++ Request Logout with access token
+    
+    + Headers
+    
+            Authorization: Bearer CAACEdEose0cBAAavhW6UJnS1AlVgZAqFZB1d5JeBqYvAiDAP7BugMuElSo6sYBxFhrfRFaJmOPKUTjQis8Uezsil7yCRUxKWZBMwkcZB0QbhVr106bkJmEHx8AhTa0o4FM5SVyCgVJO7rCvVnVwqKl3RmviBj4MFO9n7O5y4LckZATrW9o3MCc7U1uFbzZB2LYc2AZCgYLmcpdSz5tlkiTZBZB9cZAmFsxd8GZD
+
++ Response 205 (application/json)
+
++ Request Login case without any e-mail or token (application/json)
+
++ Response 403 (application/json)
+    + Attributes 
+        + message: No user to perform this action (string) - Friendly error message
+
+### Facebook login [GET /auth/facebook]
+
++ Request Login case with e-mail and token from different users (application/json)
+    + Attributes 
+        + access_token: BCKODOgaO7NHKDGCSsAhMmZA7p0GilZBSNlRD9ZBOCzJIZAB7YB0QRP9EYNdLh5tGOT2aFOZActW8LXdkl53ZBWbZBqHNhZC9xZBZALp7Bg52Bi3ZAmrbkuKbbFV8Svy8oRWDaZB5q8NfB4DDuTLQ5GnxCX2pH11ARrzHMMKdVkfUFHcI8rO7Tnzii9GbphRJtDpBXi8srmC4KRPAOfeK1sGqMu5rKgYnUKGElDkZD (string) - Access token from Facebook
+
++ Response 200 (application/json)
+    + Attributes
+        + token: CAACEdEose0cBAAavhW6UJnS1AlVgZAqFZB1d5JeBqYvAiDAP7BugMuElSo6sYBxFhrfRFaJmOPKUTjQis8Uezsil7yCRUxKWZBMwkcZB0QbhVr106bkJmEHx8AhTa0o4FM5SVyCgVJO7rCvVnVwqKl3RmviBj4MFO9n7O5y4LckZATrW9o3MCc7U1uFbzZB2LYc2AZCgYLmcpdSz5tlkiTZBZB9cZAmFsxd8QZD (string) - Access token for request to Evino API
+
+# Group Customer
+
+## Base Object [/resource/1]
+
++ Attributes (object)
+    + createdAt: `2012-04-23T18:25:43.511Z` (string) - Creation date of this resource in ISO 8861
+    + updatedAt: `2012-04-23T18:25:43.511Z` (string) - Last update of this resource in ISO 8861
+    + meta (object)
+        + href: http://api.evino.com.br/v1/resource/1 (string) - The resource location
+
+## Customer [/me]
+
+Retrieve and update customer data
+
++ Attributes (Base Object)
+    + firstName: User (string) - First name of customer
+    + lastName: of Test (string) - Last name of customer
+    + email: user@evino.com.br (string) - E-mail address of customer
+    + taxId: 12345678900 (string) - Tax ID of customer
+    + birthDate: `2012-04-23T18:25:43.511Z` (string) - Birthdate of customer in ISO 8861
+
+
+### Retrieve [GET]
+
++ Response 200 (application/json)
+    + Attributes (Customer)
+
+### Create [POST]
+
++ Request (application/json)
+    + Attributes (Customer)
+
++ Response 204
+
+### Update [PUT]
+
++ Request (application/json)
+    + Attributes (Customer)
+
++ Response 201
+
+### Delete [DELETE]
+
++ Response 204
+
+## Address [/me/address/{id}]
+
++ Attributes (Base Object)
+    + type: shipping, billing (enum) - Type of address
+    + firstName: User (string) - First name of the user
+    + lastName: of Test (string) - Last name of the user
+    + zipcode: 12345678 (string) - Zip code of the address
+    + address: Test St (string) - Address name (Street, Avenue) 
+    + number: 123 (string) - Number of the address
+    + description: The description of address (string) - Description of the address used for apartment
+    + city: São Paulo (string) - City of the address
+    + state: SP (string) - State of the address
+    + referencePoint (string) - Point of reference of the address (used for delivery purposes)
+
+### List [GET /me/address]
++ Response 200 (application/json)
+    + Attributes (array[Address])
+
+### Add [POST]
+
++ Request (application/json)
+    + Attributes (Address)
+
++ Response 201 (application/json)
+    + Attributes (Address)
+
+### Retrieve [GET]
++ Response 200 (application/json)
+    + Attributes (Address)
+
+### Update [PUT]
+
++ Request (application/json)
+    + Attributes (Address)
+
++ Response 204 (application/json)
+    + Attributes (Address)
+
+### Delete [DELETE]
++ Response 204
+
+## Payment method [/me/payment-method/{id}]
+
++ Attributes (Base Object)
+    + type: creditcard (enum) - Type of payment method, by now it's only credit cards
+    + brand: Visa, Mastercard, Amex, Elo (enum) - Brand of the credit card
+    + number: 1234 (string) - Number of credit card
+    + expiration: 12/2015 (string) - Date of expiration of credit card in MM/YYYY
+
+### List [GET /me/payment-method]
++ Response 200 (application/json)
+    + Attributes (array[Payment method])
+
+### Add [POST]
+
++ Request (application/json)
+    + Attributes (Payment method)
+
++ Response 201 (application/json)
+    + Attributes (Payment method)
+
+### Retrieve [GET]
++ Response 200 (application/json)
+    + Attributes (Payment method)
+
+### Update [PUT]
+
++ Request (application/json)
+    + Attributes (Payment method)
+
++ Response 204 (application/json)
+    + Attributes (Payment method)
+
+### Delete [DELETE]
++ Response 204
+
+## Orders [/me/orders]
+
+### List [GET]
++ Response 200
+    + Attributes (array[Order])
+
+# Group Cellar
+
+This resource shows the wines the customer has already bought 
+
+## Cellar item [/cellar-item/{sku}]
+
++ Parameters
+    + sku (string) - SKU of cellar item
+    
++ Attributes (Base Object)
+    + price (number, required) - Price of last bought of this wine
+    + quantity (number, required) - Quantity of total units bought 
+
+### List [GET /cellar]
++ Response 200 (application/json)
+    + Attributes (array[Cellar item])
+
+### Add [POST]
+
++ Request (application/json)
+    + Attributes (Cellar item)
+
++ Response 201 (application/json)
+    + Attributes (Cellar item)
+
+### Retrieve [GET]
++ Response 200 (application/json)
+    + Attributes (Cellar item)
+
+### Update [PUT]
+
++ Request (application/json)
+    + Attributes (Cellar item)
+
++ Response 204 (application/json)
+    + Attributes (Cellar item)
+
+### Delete [DELETE]
++ Response 204
+
+# Group Catalog
+
+## Product [/product/{sku}]
+
+A product is a representation of a Stock Keepping Unit (SKU)
+
++ Parameters
+    + sku (string) - The SKU of the product
+    
++ Attributes (Base Object)
+    + sku: 123456789 (string) - SKU of the product
+    + name: Bull's blood (string)
+    + vendor: Aurora (string) - Vendor of the product
+    + shortDescription: An very good wine produced in the best places of South America (string) - Short description of the product
+    + longDescription: An long description about a very good wine produced in the best places of South America (string) - Long description of the product
+    + startDate: `2012-04-23T18:25:43.511Z` (string) - Date when the product starts being disponible
+    + endDate: `2012-04-23T18:25:43.511Z` (string) - Date when the product ends being disponible
+    + images (object)
+        + thumb: http://img.evino.com.br/image-thumb-1278.png - Image in 200x200px
+    + price (object)
+        + full: 60.99 (number) - Price without any discount
+        + cart: 45.99 (number) - Price considering discount for subscription etc.
+    + quantity: 10 (number) - Quantity for sale
+    + attributes (object) - Attributes EAV editted by content team
+        + attr1: value1 (string) - Value of example for an attr1 attribute
+    
+### List [GET /product]
++ Response 200 (application/json)
+    + Attributes (array[Product])
+
+### Add [POST]
+
++ Request (application/json)
+    + Attributes (Product)
+
++ Response 201 (application/json)
+    + Attributes (Product)
+
+### Retrieve [GET]
++ Response 200 (application/json)
+    + Attributes (Product)
+
+### Update [PUT]
+
++ Request (application/json)
+    + Attributes (Product)
+
++ Response 204 (application/json)
+    + Attributes (Product)
+
+### Delete [DELETE]
++ Response 204
+
+#Group Order
+
+## Order [/order/{id}]
+
+Order resource representation
+
++ Parameters
+    + id (string) - The id of the sales order
+    
++ Attributes (Base Object)
+    + sku: 123456789 (string) - SKU of the product
+    + shipping (object)
+        + partner: Total Express (string) - Logistics partner for delivery
+        + trakcing (object)
+            + number: BR1234567 (string) - Tracking number of shipping
+            + href: http://intellipost.com.br/tracking/BR2367890 (string) - External URL for shipping tracking info
+        + estimatedDate: `2012-04-23T18:25:43.511Z` (string) - Estimated date for order delivery for customer 
+
+### List [GET /order]
++ Response 200 (application/json)
+    + Attributes (array[Order])
+
+### Add [POST]
+
++ Request (application/json)
+    + Attributes (Order)
+
++ Response 201 (application/json)
+    + Attributes (Order)
+
+### Retrieve [GET]
++ Response 200 (application/json)
+    + Attributes (Order)
+
+### Update [PUT]
+
++ Request (application/json)
+    + Attributes (Order)
+
++ Response 204 (application/json)
+    + Attributes (Order)
+
+### Delete [DELETE]
++ Response 204
+
+#Group Rule
+    
+## Sales rule [/sales-rule/{id}]
+
+Sales rule resource representation
+
++ Parameters
+    + id (string) - The id of the sales rule
+    
++ Attributes (Base Object)
+    + name: Free Shipping (string) - Name of the rule
+    + description: Free Shipping for the first buy (string) - A description more detailed about the rule
+    + active: True (boolean)
+    + scope: global, local (enum) - Global if the rule MUST be runned after and local if it MUST be runned before
+    + priority: 1 (number) - Priority of run starting at 0
+    + conditions (array[Base Object])
+        + name: ConditionName (string)
+        + configuration: (object)
+            + config1: test (string)
+    + action: ActionName (string)
+    + amount: 10 (number)
+
+### List [GET /sales-rule]
++ Response 200 (application/json)
+    + Attributes (array[Sales rule])
+
+### Add [POST]
+
++ Request (application/json)
+    + Attributes (Sales rule)
+
++ Response 201 (application/json)
+    + Attributes (Sales rule)
+
+### Retrieve [GET]
++ Response 200 (application/json)
+    + Attributes (Sales rule)
+
+### Update [PUT]
+
++ Request (application/json)
+    + Attributes (Sales rule)
+
++ Response 204 (application/json)
+    + Attributes (Sales rule)
+
+### Delete [DELETE]
++ Response 204
+
+#Group Subscription
+
+## Period [/period/{id}]
+
+Subscription period resource representation
+
++ Parameters
+    + id (string) - The id of the subscription period
+    
++ Attributes (Base Object)
+    + chargeDate: `2012-04-23T18:25:43.511Z` (string) - Date for start the charge of subscription
+    + endDate: `2012-04-23T18:25:43.511Z` (string) - End of buying period
+    
+### List [GET /period]
++ Response 200 (application/json)
+    + Attributes (array[Period])
+
+### Add [POST]
+
++ Request (application/json)
+    + Attributes (Period)
+
++ Response 201 (application/json)
+    + Attributes (Period)
+
+### Retrieve [GET]
++ Response 200 (application/json)
+    + Attributes (Period)
+
+### Update [PUT]
+
++ Request (application/json)
+    + Attributes (Period)
+
++ Response 204 (application/json)
+    + Attributes (Period)
+
+### Delete [DELETE]
++ Response 204
+
+## Plan [/plan/{id}]
+
+Subscription plan resource representation
+
++ Parameters
+    + id (string) - The id of the subscription plan
+    
++ Attributes (Base Object)
+    + name: 2 bottles plan + voucher (string)
+    + cyclePeriods: 2 (number) - Periods before automatic change the subscribers to the nextPlan, no migration if 0
+    + nextPlan (Base Object) - The plan to be migrated
+        + name: 2 bottles plan (string)
+        + cyclePeriods: 0 (number) - Periods before automatic change the subscribers to the nextPlan, no migration if 0
+        + nextPlan - The plan to be migrated
+        + available: true (boolean) - Availability of the plan
+    + available: true (boolean) - Availability of the plan
+    
+### List [GET /plan]
++ Response 200 (application/json)
+    + Attributes (array[Plan])
+
+### Add [POST]
+
++ Request (application/json)
+    + Attributes (Plan)
+
++ Response 201 (application/json)
+    + Attributes (Plan)
+
+### Retrieve [GET]
++ Response 200 (application/json)
+    + Attributes (Plan)
+
+### Update [PUT]
+
++ Request (application/json)
+    + Attributes (Plan)
+
++ Response 204 (application/json)
+    + Attributes (Plan)
+
+### Delete [DELETE]
++ Response 204    
+
+## Plan Period Product [/plan-period-product/{id}]
+
+Subscription cross of plan, period and product entities
+
++ Parameters
+    + id (string) - The id of the subscription
+    
++ Attributes (Base Object)
+    + plan (Plan)
+    + period (Period)
+    + product (Product)
+
+### List [GET /plan-period-product]
++ Response 200 (application/json)
+    + Attributes (array[Plan Period Product])
+
+### Add [POST]
+
++ Request (application/json)
+    + Attributes (Plan Period Product)
+
++ Response 201 (application/json)
+    + Attributes (Plan Period Product)
+
+### Retrieve [GET]
++ Response 200 (application/json)
+    + Attributes (Plan Period Product)
+
+### Update [PUT]
+
++ Request (application/json)
+    + Attributes (Plan Period Product)
+
++ Response 204 (application/json)
+    + Attributes (Plan Period Product)
+
+### Delete [DELETE]
++ Response 204
+
+## Subscription [/subscription/{id}]
+
+Subscription resource representation
+
++ Parameters
+    + id (string) - The id of the subscription
+    
++ Attributes (Base Object)
+    + number: BRS2345678902345678 (string) - The incremental id for this subscription
+    + status: new, active, paused, canceled, invalid (enum) - The current status of this subscription        
+    + remainingCycles: 2 (number) - The number of remaining cycles on current subscription plan
+    + customer (Customer) - The customer owner of the subscription
+    + plan (Plan) - Plan for this subscription
+    + periods (array[Plan Period Product]) - Periods charged for this subscription
+    + paymentMethod (Payment method) - Payment method choosen for this subscription
+    + shippingAddress (Address) - Shipping address choosen for this subscription
+    
+### List [GET /subscription]
++ Response 200 (application/json)
+    + Attributes (array[Subscription])
+
+### Add [POST]
+
++ Request (application/json)
+    + Attributes (Subscription)
+
++ Response 201 (application/json)
+    + Attributes (Subscription)
+
+### Retrieve [GET]
++ Response 200 (application/json)
+    + Attributes (Subscription)
+
+### Update [PUT]
+
++ Request (application/json)
+    + Attributes (Subscription)
+
++ Response 204 (application/json)
+    + Attributes (Subscription)
+
+### Delete [DELETE]
++ Response 204
